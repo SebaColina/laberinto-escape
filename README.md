@@ -4,7 +4,7 @@ Juego de escape room basado en un laberinto determinista, diseñado para ser lig
 
 ## 🚀 Despliegue en GitHub Pages
 
-1. **Crear Repositorio**: Crea un nuevo repositorio público en GitHub.
+1. **Crear Repositorio**: Crea un nuevo repositorio **público** en GitHub.
 2. **Subir Código**:
    ```bash
    git init
@@ -18,6 +18,12 @@ Juego de escape room basado en un laberinto determinista, diseñado para ser lig
    - Ve a **Settings** en tu repositorio.
    - Entra en **Pages**.
    - En **Build and deployment > Source**, selecciona **GitHub Actions**.
+
+## 🔒 Seguridad y Edición
+Aunque el repositorio sea público:
+- **Solo tú** tienes permiso para modificar los archivos originales.
+- Nadie puede subir cambios sin que tú los apruebes mediante una Pull Request.
+- Tus archivos están protegidos por la seguridad de tu cuenta de GitHub.
 
 ## 🛠️ Especificaciones
 - **Tecnología**: Next.js (Static Export).
