@@ -96,7 +96,6 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
     const player = playerRef.current;
     const dx = tx - player.x;
     const dy = ty - player.y;
-    const dist = Math.hypot(dx, dy);
     
     // Friction factor for wall collision logic
     const speed = 0.3; 
@@ -211,7 +210,7 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
   };
 
   return (
-    <div className="relative group cursor-none">
+    <div className="relative group">
       <canvas
         ref={canvasRef}
         width={width}
@@ -220,7 +219,7 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
         onPointerUp={() => setIsDragging(false)}
         onPointerLeave={() => setIsDragging(false)}
         onPointerMove={handlePointerMove}
-        className="max-w-full h-auto border-2 border-[#2a6cff] rounded-xl shadow-[0_0_30px_rgba(0,102,255,0.4)] touch-none select-none bg-black"
+        className="max-w-full h-auto border-2 border-[#2a6cff] rounded-xl shadow-[0_0_30px_rgba(0,102,255,0.4)] touch-none select-none bg-black cursor-crosshair"
       />
       <div className="absolute inset-0 rounded-xl pointer-events-none shadow-[inset_0_0_50px_rgba(0,224,255,0.1)]" />
     </div>
