@@ -2,6 +2,11 @@
 
 Este es un juego de escape room estático diseñado para ser hospedado gratuitamente en GitHub Pages.
 
+---
+✨ **Prototipado con Firebase Studio**  
+Este proyecto fue desarrollado en colaboración con Firebase Studio, un entorno de desarrollo moderno para aplicaciones web de alto rendimiento.
+---
+
 ## 🚀 Instrucciones de Despliegue en GitHub Pages
 
 1. **Crear Repositorio**: Crea un nuevo repositorio en GitHub (público).
@@ -9,7 +14,7 @@ Este es un juego de escape room estático diseñado para ser hospedado gratuitam
    ```bash
    git init
    git add .
-   git commit -m "Initial commit"
+   git commit -m "Initial commit from Firebase Studio"
    git branch -M main
    git remote add origin https://github.com/TU_USUARIO/TU_REPO.git
    git push -u origin main
@@ -24,3 +29,4 @@ Este es un juego de escape room estático diseñado para ser hospedado gratuitam
 - **Tecnología**: Next.js 15 (Static Export).
 - **Estilos**: Tailwind CSS + ShadCN UI.
 - **Sin Servidor**: No requiere base de datos ni funciones de IA para funcionar.
+- **Entorno**: Creado y optimizado en Firebase Studio.
