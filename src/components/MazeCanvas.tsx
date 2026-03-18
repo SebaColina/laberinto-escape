@@ -77,16 +77,18 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
     if (!hitCanvasRef.current) return false;
     const ctx = hitCanvasRef.current.getContext('2d');
     if (!ctx) return false;
-    const data = ctx.getImageData(px, py, 1, 1).data;
+    // Round coordinates to avoid sub-pixel issues
+    const data = ctx.getImageData(Math.floor(px), Math.floor(py), 1, 1).data;
     return data[0] < 50; // Black or close to it is a wall
   };
 
   const collides = (cx: number, cy: number, r: number) => {
     const samples = 12;
+    const checkRadius = r + 1; // Slightly larger for safety
     for (let i = 0; i < samples; i++) {
       const angle = (i / samples) * Math.PI * 2;
-      const sx = cx + Math.cos(angle) * r;
-      const sy = cy + Math.sin(angle) * r;
+      const sx = cx + Math.cos(angle) * checkRadius;
+      const sy = cy + Math.sin(angle) * checkRadius;
       if (isWall(sx, sy)) return true;
     }
     return isWall(cx, cy);
@@ -94,21 +96,47 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
 
   const updatePlayer = (tx: number, ty: number) => {
     const player = playerRef.current;
-    const dx = tx - player.x;
-    const dy = ty - player.y;
     
-    // Friction factor for wall collision logic
-    const speed = 0.3; 
-    const stepX = dx * speed;
-    const stepY = dy * speed;
+    // Total distance desired (with a speed factor)
+    const totalDx = (tx - player.x) * 0.4;
+    const totalDy = (ty - player.y) * 0.4;
+    const totalDist = Math.hypot(totalDx, totalDy);
+    
+    if (totalDist < 0.1) return;
 
-    if (!collides(player.x + stepX, player.y + stepY, player.r)) {
-      player.x += stepX;
-      player.y += stepY;
-    } else if (!collides(player.x + stepX, player.y, player.r)) {
-      player.x += stepX; // Allow sliding on X
-    } else if (!collides(player.x, player.y + stepY, player.r)) {
-      player.y += stepY; // Allow sliding on Y
+    // Movement resolution: move in small increments to prevent tunneling through walls
+    const stepSize = 2; 
+    const numSteps = Math.ceil(totalDist / stepSize);
+    
+    // Normalized direction
+    const dirX = totalDx / totalDist;
+    const dirY = totalDy / totalDist;
+
+    for (let i = 0; i < numSteps; i++) {
+      // Calculate next sub-step
+      const stepX = dirX * Math.min(stepSize, totalDist - i * stepSize);
+      const stepY = dirY * Math.min(stepSize, totalDist - i * stepSize);
+      
+      let moved = false;
+
+      // 1. Try moving in both directions
+      if (!collides(player.x + stepX, player.y + stepY, player.r)) {
+        player.x += stepX;
+        player.y += stepY;
+        moved = true;
+      } 
+      // 2. Slide horizontally
+      else if (!collides(player.x + stepX, player.y, player.r)) {
+        player.x += stepX;
+        moved = true;
+      }
+      // 3. Slide vertically
+      else if (!collides(player.x, player.y + stepY, player.r)) {
+        player.y += stepY;
+        moved = true;
+      }
+
+      if (!moved) break; // Cannot move further in this direction
     }
 
     // Check Victory
