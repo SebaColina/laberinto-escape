@@ -106,7 +106,7 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#2a6cff]">
           <Radio className="w-5 h-5" />
-          Transmisión Descifrada
+          Transmisión Encriptada
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -140,8 +140,17 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
             </div>
           </div>
 
-          <div className="p-4 bg-[#2a6cff]/10 rounded-md border border-[#2a6cff]/20 w-full text-center font-mono text-xl tracking-[0.4em]">
-            {code}
+          <div className="p-8 bg-[#2a6cff]/5 rounded-md border border-[#2a6cff]/10 w-full flex flex-col items-center justify-center gap-4">
+            <div className="flex gap-1">
+              {[1, 2, 3].map((i) => (
+                <div 
+                  key={i} 
+                  className={`w-1 h-6 bg-[#2a6cff]/40 rounded-full ${isPlaying ? 'animate-pulse' : ''}`}
+                  style={{ animationDelay: `${i * 0.2}s` }}
+                />
+              ))}
+            </div>
+            <p className="text-[10px] text-[#2a6cff]/60 uppercase tracking-widest">Señal de audio activa</p>
           </div>
           
           <Button 
