@@ -1,26 +1,25 @@
 # Laberinto Cibernético - Escape Room
 
-Este es un juego de escape room estático diseñado para ser hospedado gratuitamente en GitHub Pages.
+Juego de escape room basado en un laberinto determinista, diseñado para ser ligero y totalmente compatible con hosting estático.
 
-## 🚀 Instrucciones de Despliegue en GitHub Pages
+## 🚀 Despliegue en GitHub Pages
 
-1. **Crear Repositorio**: Crea un nuevo repositorio en GitHub (público).
+1. **Crear Repositorio**: Crea un nuevo repositorio público en GitHub.
 2. **Subir Código**:
    ```bash
    git init
    git add .
-   git commit -m "Initial commit"
+   git commit -m "Initial release"
    git branch -M main
    git remote add origin https://github.com/TU_USUARIO/TU_REPO.git
    git push -u origin main
    ```
 3. **Configurar GitHub Pages**:
-   - Ve a **Settings** (Ajustes) en tu repositorio.
-   - Entra en la sección **Pages**.
+   - Ve a **Settings** en tu repositorio.
+   - Entra en **Pages**.
    - En **Build and deployment > Source**, selecciona **GitHub Actions**.
-   - ¡Listo! En unos minutos tu web estará activa.
 
-## 🛠️ Notas Técnicas
-- **Tecnología**: Next.js 15 (Static Export).
-- **Estilos**: Tailwind CSS + ShadCN UI.
-- **Sin Servidor**: No requiere base de datos ni funciones adicionales para funcionar.
+## 🛠️ Especificaciones
+- **Tecnología**: Next.js (Static Export).
+- **Estilos**: Tailwind CSS.
+- **Sin Dependencias de Servidor**: Funciona al 100% en el navegador del cliente.

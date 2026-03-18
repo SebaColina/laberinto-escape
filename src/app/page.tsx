@@ -21,7 +21,7 @@ export default function MazeApp() {
     startColor: '#33ff99',
     goalColor: '#ff3df6',
     backgroundColor: '#070b12',
-    theme: 'Protocolo de Escape'
+    theme: 'Protocolo de Seguridad'
   };
 
   const rows = 13;
@@ -83,18 +83,18 @@ export default function MazeApp() {
               </CardHeader>
               <CardContent className="space-y-6 text-center text-sm">
                 <div className="space-y-4">
-                  <p className="font-bold text-lg text-white">Laberinto 50</p>
-                  <p className="text-gray-300">Estás un paso más cerca del antídoto. Tenés 50 segundos para encontrar la salida.</p>
+                  <p className="font-bold text-lg text-white">Misión: El Antídoto</p>
+                  <p className="text-gray-300">Tienes 50 segundos para encontrar la salida antes de que el sistema se bloquee.</p>
                   <div className="p-3 bg-white/5 rounded-lg border border-white/10 flex items-start gap-3 text-left">
                     <ShieldAlert className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
-                    <p className="text-xs text-gray-400">Atención: el movimiento tiene rozamiento... las paredes pueden frenarte.</p>
+                    <p className="text-xs text-gray-400">Las paredes generan fricción. Mantén la precisión para no perder tiempo.</p>
                   </div>
                 </div>
                 <Button 
                   onClick={() => startNewGame()}
                   className="w-full h-12 bg-[#2a6cff] hover:bg-[#39f] text-black font-bold text-lg transition-all glow-primary"
                 >
-                  JUGAR
+                  INICIAR
                 </Button>
               </CardContent>
             </Card>
@@ -127,10 +127,10 @@ export default function MazeApp() {
           <div className="text-center space-y-6 animate-in zoom-in-95 duration-300">
             <div className="text-6xl text-destructive font-black flex flex-col items-center gap-4">
               <Timer className="w-16 h-16 animate-pulse" />
-              TIEMPO AGOTADO
+              SISTEMA BLOQUEADO
             </div>
             <Button onClick={() => startNewGame()} variant="outline" className="border-primary text-primary hover:bg-primary/10">
-              REINTENTAR
+              REINTENTAR ACCESO
             </Button>
           </div>
         )}
@@ -138,7 +138,7 @@ export default function MazeApp() {
         {status === 'victory' && (
           <div className="text-center space-y-4 animate-in zoom-in-95 duration-300">
             <Trophy className="w-20 h-20 text-yellow-400 mx-auto drop-shadow-[0_0_20px_rgba(250,204,21,0.6)]" />
-            <h2 className="text-5xl font-black text-white italic tracking-tighter">¡ESCAPE LOGRADO!</h2>
+            <h2 className="text-5xl font-black text-white italic tracking-tighter">ACCESO CONCEDIDO</h2>
           </div>
         )}
 
@@ -151,7 +151,7 @@ export default function MazeApp() {
       </main>
 
       <footer className="mt-auto py-8 text-white/20 text-xs uppercase tracking-[0.3em] font-medium">
-        Cyber-System Alpha v2.0
+        Protocolo de Escape v1.0
       </footer>
     </div>
   );

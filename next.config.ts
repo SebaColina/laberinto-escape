@@ -5,9 +5,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // Si tu repo NO es username.github.io (es decir, es un subproyecto), 
-  // descomenta las líneas de abajo y pon el nombre de tu repositorio:
-  // basePath: '/nombre-de-tu-repo',
+  // Si usas una URL como usuario.github.io/repo/, descomenta y edita:
+  // basePath: '/nombre-del-repo',
 };
 
 export default nextConfig;
