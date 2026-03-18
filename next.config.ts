@@ -5,9 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // IMPORTANTE: Si tu repositorio se llama "mi-juego", 
-  // descomenta la línea de abajo y cámbiala a: basePath: '/mi-juego',
-  // basePath: '',
+  basePath: '/laberinto-escape',
 };
 
 export default nextConfig;
