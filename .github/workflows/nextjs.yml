@@ -20,6 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
+        uses: origin/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+      - name: Checkout (Fallback)
         uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -41,7 +45,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps: status.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
