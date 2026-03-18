@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -7,10 +6,8 @@ import { generateRandomMaze, MazeCell } from '@/lib/maze-generator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { MorsePlayer } from '@/components/MorsePlayer';
-import { ShieldAlert, Timer, Trophy, Play, Info } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { ShieldAlert, Timer, Trophy, Info } from 'lucide-react';
 
 type GameStatus = 'intro' | 'playing' | 'victory' | 'timeout' | 'morse';
 
@@ -129,7 +126,7 @@ export default function MazeApp() {
 
         {status === 'morse' && (
           <div className="w-full max-w-md animate-in slide-in-from-bottom-8 duration-700">
-             <MorsePlayer code="·--· ·- --· ·· -· ·- / ··---" />
+             <MorsePlayer code="-- · - --- -·· --- ·-·· --- --· ·· ·-" />
           </div>
         )}
 
