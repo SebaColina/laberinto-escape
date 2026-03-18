@@ -9,13 +9,20 @@ interface MazeCanvasProps {
   rows: number;
   cols: number;
   onVictory: () => void;
+  config?: {
+    wallColor?: string;
+    startColor?: string;
+    goalColor?: string;
+    backgroundColor?: string;
+  };
 }
 
 export const MazeCanvas: React.FC<MazeCanvasProps> = ({
   maze,
   rows,
   cols,
-  onVictory
+  onVictory,
+  config = {}
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hitCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -27,9 +34,11 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
   const cellSize = 40;
   const padding = 20;
   const wallThickness = 6;
-  const wallColor = '#2a6cff';
-  const startColor = '#33ff99';
-  const goalColor = '#ff3df6';
+  
+  const wallColor = config.wallColor || '#2a6cff';
+  const startColor = config.startColor || '#33ff99';
+  const goalColor = config.goalColor || '#ff3df6';
+  const backgroundColor = config.backgroundColor || '#000000';
 
   const width = cols * cellSize + padding * 2;
   const height = rows * cellSize + padding * 2;
@@ -40,14 +49,12 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
   };
 
   useEffect(() => {
-    // Initialize player position
     playerRef.current = {
       x: padding + cellSize / 2,
       y: padding + cellSize / 2,
       r: cellSize * 0.3
     };
 
-    // Build hit map for collision detection
     const hitCanvas = document.createElement('canvas');
     hitCanvas.width = width;
     hitCanvas.height = height;
@@ -77,14 +84,13 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
     if (!hitCanvasRef.current) return false;
     const ctx = hitCanvasRef.current.getContext('2d');
     if (!ctx) return false;
-    // Round coordinates to avoid sub-pixel issues
     const data = ctx.getImageData(Math.floor(px), Math.floor(py), 1, 1).data;
-    return data[0] < 50; // Black or close to it is a wall
+    return data[0] < 50;
   };
 
   const collides = (cx: number, cy: number, r: number) => {
     const samples = 12;
-    const checkRadius = r + 1; // Slightly larger for safety
+    const checkRadius = r + 1;
     for (let i = 0; i < samples; i++) {
       const angle = (i / samples) * Math.PI * 2;
       const sx = cx + Math.cos(angle) * checkRadius;
@@ -96,50 +102,33 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
 
   const updatePlayer = (tx: number, ty: number) => {
     const player = playerRef.current;
-    
-    // Total distance desired (with a speed factor)
     const totalDx = (tx - player.x) * 0.4;
     const totalDy = (ty - player.y) * 0.4;
     const totalDist = Math.hypot(totalDx, totalDy);
     
     if (totalDist < 0.1) return;
 
-    // Movement resolution: move in small increments to prevent tunneling through walls
     const stepSize = 2; 
     const numSteps = Math.ceil(totalDist / stepSize);
-    
-    // Normalized direction
     const dirX = totalDx / totalDist;
     const dirY = totalDy / totalDist;
 
     for (let i = 0; i < numSteps; i++) {
-      // Calculate next sub-step
       const stepX = dirX * Math.min(stepSize, totalDist - i * stepSize);
       const stepY = dirY * Math.min(stepSize, totalDist - i * stepSize);
-      
       let moved = false;
-
-      // 1. Try moving in both directions
       if (!collides(player.x + stepX, player.y + stepY, player.r)) {
-        player.x += stepX;
-        player.y += stepY;
-        moved = true;
+        player.x += stepX; player.y += stepY; moved = true;
       } 
-      // 2. Slide horizontally
       else if (!collides(player.x + stepX, player.y, player.r)) {
-        player.x += stepX;
-        moved = true;
+        player.x += stepX; moved = true;
       }
-      // 3. Slide vertically
       else if (!collides(player.x, player.y + stepY, player.r)) {
-        player.y += stepY;
-        moved = true;
+        player.y += stepY; moved = true;
       }
-
-      if (!moved) break; // Cannot move further in this direction
+      if (!moved) break;
     }
 
-    // Check Victory
     const distToGoal = Math.hypot(player.x - goalPos.x, player.y - goalPos.y);
     if (distToGoal < cellSize * 0.4) {
       onVictory();
@@ -154,26 +143,19 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
-      
-      // Draw background
-      const g = ctx.createLinearGradient(0, 0, width, height);
-      g.addColorStop(0, '#0b1220');
-      g.addColorStop(1, '#0a0f1a');
-      ctx.fillStyle = g;
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, width, height);
 
-      // Draw Starfield
       ctx.save();
       ctx.globalAlpha = 0.1;
       for (let i = 0; i < 50; i++) {
         ctx.beginPath();
         ctx.arc((i * 137) % width, (i * 257) % height, 1, 0, Math.PI * 2);
-        ctx.fillStyle = '#4da3ff';
+        ctx.fillStyle = wallColor;
         ctx.fill();
       }
       ctx.restore();
 
-      // Draw Maze Walls
       ctx.save();
       ctx.strokeStyle = wallColor;
       ctx.lineWidth = wallThickness;
@@ -195,7 +177,6 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
       }
       ctx.restore();
 
-      // Draw Points
       ctx.fillStyle = startColor;
       ctx.shadowBlur = 15; ctx.shadowColor = startColor;
       ctx.beginPath(); ctx.arc(padding + cellSize / 2, padding + cellSize / 2, 8, 0, Math.PI * 2); ctx.fill();
@@ -204,17 +185,16 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
       ctx.shadowBlur = 15; ctx.shadowColor = goalColor;
       ctx.beginPath(); ctx.arc(goalPos.x, goalPos.y, 8, 0, Math.PI * 2); ctx.fill();
 
-      // Draw Player
       const p = playerRef.current;
       ctx.save();
-      ctx.shadowColor = '#2a6cff';
+      ctx.shadowColor = wallColor;
       ctx.shadowBlur = 20;
-      ctx.fillStyle = '#4da3ff';
+      ctx.fillStyle = wallColor;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = '#e0fbff';
+      ctx.strokeStyle = '#ffffff';
       ctx.stroke();
       ctx.restore();
 
@@ -225,7 +205,7 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
     return () => {
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [maze, rows, cols, width, height, goalPos.x, goalPos.y]);
+  }, [maze, rows, cols, width, height, goalPos.x, goalPos.y, wallColor, startColor, goalColor, backgroundColor]);
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging) return;
@@ -247,9 +227,8 @@ export const MazeCanvas: React.FC<MazeCanvasProps> = ({
         onPointerUp={() => setIsDragging(false)}
         onPointerLeave={() => setIsDragging(false)}
         onPointerMove={handlePointerMove}
-        className="max-w-full h-auto border-2 border-[#2a6cff] rounded-xl shadow-[0_0_30px_rgba(0,102,255,0.4)] touch-none select-none bg-black cursor-crosshair"
+        className="max-w-full h-auto border-2 border-white/10 rounded-xl shadow-2xl touch-none select-none bg-black cursor-crosshair"
       />
-      <div className="absolute inset-0 rounded-xl pointer-events-none shadow-[inset_0_0_50px_rgba(0,224,255,0.1)]" />
     </div>
   );
 };
