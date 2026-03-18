@@ -6,6 +6,18 @@ export type MazeCell = {
   visited: boolean;
 };
 
+// Generador de números pseudo-aleatorios con semilla fija
+class SeededRandom {
+  private seed: number;
+  constructor(seed: number) {
+    this.seed = seed;
+  }
+  next() {
+    this.seed = (this.seed * 9301 + 49297) % 233280;
+    return this.seed / 233280;
+  }
+}
+
 export function generateEmptyMaze(rows: number, cols: number): MazeCell[][] {
   const maze: MazeCell[][] = [];
   for (let y = 0; y < rows; y++) {
@@ -18,7 +30,9 @@ export function generateEmptyMaze(rows: number, cols: number): MazeCell[][] {
   return maze;
 }
 
-export function generateRandomMaze(rows: number, cols: number, style: string = 'classic'): MazeCell[][] {
+export function generateRandomMaze(rows: number, cols: number): MazeCell[][] {
+  // Semilla fija para que el laberinto sea siempre el mismo
+  const rng = new SeededRandom(12345);
   const maze = generateEmptyMaze(rows, cols);
   const stack: [number, number][] = [];
   let current: [number, number] = [0, 0];
@@ -38,7 +52,7 @@ export function generateRandomMaze(rows: number, cols: number, style: string = '
   while (unvisitedCount > 0) {
     const neighbors = getNeighbors(current[0], current[1]);
     if (neighbors.length > 0) {
-      const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+      const next = neighbors[Math.floor(rng.next() * neighbors.length)];
       stack.push(current);
       
       const [currR, currC] = current;
@@ -65,19 +79,6 @@ export function generateRandomMaze(rows: number, cols: number, style: string = '
       current = stack.pop()!;
     } else {
       break;
-    }
-  }
-
-  // Sparsity: remove random walls if style is sparse
-  if (style === 'sparse') {
-    for (let i = 0; i < (rows * cols) / 5; i++) {
-      const r = Math.floor(Math.random() * (rows - 2)) + 1;
-      const c = Math.floor(Math.random() * (cols - 2)) + 1;
-      const side = (['N', 'S', 'E', 'W'] as const)[Math.floor(Math.random() * 4)];
-      if (side === 'N') { maze[r][c].N = false; maze[r-1][c].S = false; }
-      if (side === 'S') { maze[r][c].S = false; maze[r+1][c].N = false; }
-      if (side === 'W') { maze[r][c].W = false; maze[r][c-1].E = false; }
-      if (side === 'E') { maze[r][c].E = false; maze[r][c+1].W = false; }
     }
   }
 

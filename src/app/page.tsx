@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -8,9 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MorsePlayer } from '@/components/MorsePlayer';
-import { Input } from '@/components/ui/input';
-import { ShieldAlert, Timer, Trophy, Info, Sparkles, Loader2 } from 'lucide-react';
-import { generateCustomMaze, type GenerateCustomMazeOutput } from '@/ai/flows/generate-custom-maze-flow';
+import { ShieldAlert, Timer, Trophy, Info } from 'lucide-react';
 
 type GameStatus = 'intro' | 'playing' | 'victory' | 'timeout' | 'morse';
 
@@ -18,41 +15,23 @@ export default function MazeApp() {
   const [status, setStatus] = useState<GameStatus>('intro');
   const [timeLeft, setTimeLeft] = useState(50);
   const [maze, setMaze] = useState<MazeCell[][]>([]);
-  const [prompt, setPrompt] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [mazeConfig, setMazeConfig] = useState<Partial<GenerateCustomMazeOutput>>({
+  
+  const mazeConfig = {
     wallColor: '#2a6cff',
     startColor: '#33ff99',
     goalColor: '#ff3df6',
-    backgroundColor: '#070b12'
-  });
+    backgroundColor: '#070b12',
+    theme: 'Protocolo de Escape'
+  };
 
   const rows = 13;
   const cols = 19;
 
-  const startNewGame = useCallback((config?: Partial<GenerateCustomMazeOutput>) => {
-    const style = config?.style || 'classic';
-    setMaze(generateRandomMaze(rows, cols, style));
+  const startNewGame = useCallback(() => {
+    setMaze(generateRandomMaze(rows, cols));
     setTimeLeft(50);
     setStatus('playing');
-    if (config) {
-      setMazeConfig(config);
-    }
   }, []);
-
-  const handleAiGenerate = async () => {
-    if (!prompt) return;
-    setIsGenerating(true);
-    try {
-      const output = await generateCustomMaze({ description: prompt });
-      setMazeConfig(output);
-      startNewGame(output);
-    } catch (error) {
-      console.error("Error generating maze:", error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   useEffect(() => {
     if (status !== 'playing') return;
@@ -78,11 +57,10 @@ export default function MazeApp() {
 
   return (
     <div 
-      className="min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-1000"
+      className="min-h-screen flex flex-col items-center justify-center p-4"
       style={{ backgroundColor: mazeConfig.backgroundColor }}
     >
       
-      {/* HEADER */}
       <header className="mb-8 text-center">
         <h1 
           className="text-4xl md:text-5xl font-extrabold tracking-tighter uppercase italic drop-shadow-lg"
@@ -116,32 +94,8 @@ export default function MazeApp() {
                   onClick={() => startNewGame()}
                   className="w-full h-12 bg-[#2a6cff] hover:bg-[#39f] text-black font-bold text-lg transition-all glow-primary"
                 >
-                  JUGAR CLÁSICO
+                  JUGAR
                 </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-black/40 border-primary/20 backdrop-blur-md">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-widest">
-                  <Sparkles className="w-4 h-4" />
-                  Personalizar con IA
-                </div>
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="Ej: Laberinto de lava difícil..." 
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    className="bg-black/50 border-white/10 text-white"
-                  />
-                  <Button 
-                    disabled={isGenerating || !prompt}
-                    onClick={handleAiGenerate}
-                    className="bg-primary text-primary-foreground"
-                  >
-                    {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Crear'}
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -155,7 +109,7 @@ export default function MazeApp() {
                 {timeLeft}s
               </Badge>
               <div className="text-xs uppercase tracking-widest font-bold opacity-70" style={{ color: mazeConfig.wallColor }}>
-                {mazeConfig.theme || 'Protocolo de Escape Activo'}
+                {mazeConfig.theme}
               </div>
             </div>
             
@@ -175,7 +129,7 @@ export default function MazeApp() {
               <Timer className="w-16 h-16 animate-pulse" />
               TIEMPO AGOTADO
             </div>
-            <Button onClick={() => startNewGame(mazeConfig)} variant="outline" className="border-primary text-primary hover:bg-primary/10">
+            <Button onClick={() => startNewGame()} variant="outline" className="border-primary text-primary hover:bg-primary/10">
               REINTENTAR
             </Button>
           </div>
