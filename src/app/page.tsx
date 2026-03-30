@@ -144,7 +144,7 @@ export default function MazeApp() {
 
         {status === 'morse' && (
           <div className="w-full max-w-md animate-in slide-in-from-bottom-8 duration-700">
-             <MorsePlayer code="-- . - --- -.. --- .-.. --- --. .. .-" />
+             <MorsePlayer code=".--. .- --. .. -. .- / ..---" />
           </div>
         )}
 
