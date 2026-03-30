@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   basePath: '/laberinto-escape',
-  // Ignoramos errores de tipos y linting para asegurar que el build termine y genere la carpeta 'out'
+  // Forzamos la ignorancia de errores para asegurar que la carpeta 'out' se genere siempre
   typescript: {
     ignoreBuildErrors: true,
   },
