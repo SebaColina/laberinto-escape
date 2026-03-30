@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Play, Pause, RotateCcw, Radio } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface MorsePlayerProps {
   code: string;
@@ -46,7 +47,6 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
     osc.start();
     osc.stop(ctx.currentTime + duration / 1000);
 
-    // Static noise effect
     const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
     const data = noiseBuffer.getChannelData(0);
     for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
@@ -101,6 +101,8 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
     setIsPlaying(!isPlaying);
   };
 
+  const characters = code.split('');
+
   return (
     <Card className="bg-black/80 border-[#2a6cff]/40 text-[#e0faff] backdrop-blur-xl">
       <CardHeader>
@@ -140,17 +142,21 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
             </div>
           </div>
 
-          <div className="p-8 bg-[#2a6cff]/5 rounded-md border border-[#2a6cff]/10 w-full flex flex-col items-center justify-center gap-4">
-            <div className="flex gap-1">
-              {[1, 2, 3].map((i) => (
-                <div 
-                  key={i} 
-                  className={`w-1 h-6 bg-[#2a6cff]/40 rounded-full ${isPlaying ? 'animate-pulse' : ''}`}
-                  style={{ animationDelay: `${i * 0.2}s` }}
-                />
-              ))}
-            </div>
-            <p className="text-[10px] text-[#2a6cff]/60 uppercase tracking-widest">Señal de audio activa</p>
+          <div className="p-4 bg-[#2a6cff]/5 rounded-md border border-[#2a6cff]/10 w-full min-h-[120px] flex flex-wrap items-center justify-center gap-x-1 gap-y-2 font-mono overflow-hidden">
+            {characters.map((char, idx) => (
+              <span 
+                key={idx}
+                className={cn(
+                  "text-2xl transition-all duration-200",
+                  idx === currentIndex 
+                    ? "text-[#33ff99] scale-150 drop-shadow-[0_0_10px_#33ff99]" 
+                    : "text-[#2a6cff]/30",
+                  char === ' ' && "mx-2"
+                )}
+              >
+                {char === ' ' ? '\u00A0' : char}
+              </span>
+            ))}
           </div>
           
           <Button 
