@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -32,32 +31,38 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
 
-    osc.type = "square";
-    osc.frequency.value = 750;
-    filter.type = "bandpass";
-    filter.frequency.value = 1200;
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.01);
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration / 1000);
+    // Cambiado a 'sine' para un sonido más limpio en duraciones cortas
+    osc.type = "sine";
+    osc.frequency.value = 800;
+    
+    filter.type = "lowpass";
+    filter.frequency.value = 2000;
+
+    const now = ctx.currentTime;
+    // Envelope más rápido para que el punto (100ms) se escuche bien
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.005);
+    gain.gain.linearRampToValueAtTime(0, now + duration / 1000);
 
     osc.connect(filter);
     filter.connect(gain);
     gain.connect(ctx.destination);
 
-    osc.start();
-    osc.stop(ctx.currentTime + duration / 1000);
+    osc.start(now);
+    osc.stop(now + duration / 1000);
 
-    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+    // Ruido de fondo sutil para atmósfera
+    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.1, ctx.sampleRate);
     const data = noiseBuffer.getChannelData(0);
     for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
     const noise = ctx.createBufferSource();
     noise.buffer = noiseBuffer;
     const noiseGain = ctx.createGain();
-    noiseGain.gain.value = 0.02;
+    noiseGain.gain.value = 0.01;
     noise.connect(noiseGain);
     noiseGain.connect(ctx.destination);
-    noise.start();
-    noise.stop(ctx.currentTime + duration / 1000);
+    noise.start(now);
+    noise.stop(now + duration / 1000);
   };
 
   const playStep = (index: number) => {
@@ -72,14 +77,23 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
     setProgress((index / code.length) * 100);
 
     const char = code[index];
-    if (char === '.') beep(100);
-    if (char === '-') beep(300);
+    let waitTime = 300;
 
-    const delay = char === ' ' ? 300 : char === '/' ? 700 : 400;
+    if (char === '.') {
+      beep(100);
+      waitTime = 200;
+    } else if (char === '-') {
+      beep(300);
+      waitTime = 400;
+    } else if (char === ' ') {
+      waitTime = 500;
+    } else if (char === '/') {
+      waitTime = 800;
+    }
 
     timeoutRef.current = setTimeout(() => {
       playStep(index + 1);
-    }, delay);
+    }, waitTime);
   };
 
   useEffect(() => {
@@ -108,7 +122,7 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#2a6cff]">
           <Radio className="w-5 h-5" />
-          Transmisión Encriptada
+          Señal Capturada
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -136,7 +150,7 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
               />
               <div className="text-[10px] uppercase tracking-tighter text-muted-foreground flex justify-between">
                 <span>0%</span>
-                <span>Buffer de señal: {currentIndex}/{code.length}</span>
+                <span>Descifrando: {currentIndex}/{code.length}</span>
                 <span>100%</span>
               </div>
             </div>
@@ -147,10 +161,10 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
               <span 
                 key={idx}
                 className={cn(
-                  "text-2xl transition-all duration-200",
+                  "text-3xl transition-all duration-150",
                   idx === currentIndex 
-                    ? "text-[#33ff99] scale-150 drop-shadow-[0_0_10px_#33ff99]" 
-                    : "text-[#2a6cff]/30",
+                    ? "text-[#33ff99] scale-150 drop-shadow-[0_0_15px_#33ff99] font-bold" 
+                    : (idx < currentIndex ? "text-[#2a6cff]/60" : "text-[#2a6cff]/20"),
                   char === ' ' && "mx-2"
                 )}
               >
@@ -170,7 +184,7 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
             className="text-xs text-[#2a6cff]/60 hover:text-[#2a6cff]"
           >
             <RotateCcw className="w-3 h-3 mr-2" />
-            Reiniciar señal
+            Reiniciar secuencia
           </Button>
         </div>
       </CardContent>
