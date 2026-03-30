@@ -83,12 +83,12 @@ export const MorsePlayer: React.FC<MorsePlayerProps> = ({ code }) => {
       beep(100);
       waitTime = 200;
     } else if (char === '-') {
-      beep(300);
-      waitTime = 400;
-    } else if (char === ' ') {
+      beep(400);
       waitTime = 500;
+    } else if (char === ' ') {
+      waitTime = 600;
     } else if (char === '/') {
-      waitTime = 800;
+      waitTime = 1000;
     }
 
     timeoutRef.current = setTimeout(() => {
